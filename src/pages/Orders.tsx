@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Eye, Filter, IndianRupee } from "lucide-react";
+import { ShoppingCart, Eye, Filter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -158,12 +158,7 @@ export default function Orders() {
                 <TableCell className="hidden md:table-cell">
                   {new Date(order.date).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="text-right">
-                  <span className="flex items-center justify-end">
-                    <IndianRupee className="h-3.5 w-3.5 mr-1" />
-                    {order.total.toFixed(2)}
-                  </span>
-                </TableCell>
+                <TableCell className="text-right">₹{order.total.toFixed(2)}</TableCell>
                 <TableCell>{getStatusBadge(order.status)}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm">
