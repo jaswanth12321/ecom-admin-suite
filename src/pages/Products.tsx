@@ -2,6 +2,7 @@
 import { PageHeader, PageHeaderCreateButton } from "@/components/layout/PageHeader";
 import { ProductsTable } from "@/components/products/ProductsTable";
 import { ProductFilters } from "@/components/products/ProductFilters";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 export default function Products() {
