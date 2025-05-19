@@ -1,10 +1,10 @@
 
 import { useState } from "react";
 import { PageHeader, PageHeaderCreateButton } from "@/components/layout/PageHeader";
-import { ProductsTable, addProductToList } from "@/components/products/ProductsTable";
+import { ProductsTable } from "@/components/products/ProductsTable";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { Button } from "@/components/ui/button";
-import { Plus, IndianRupee } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,6 @@ export default function Products() {
     stock: "",
     description: ""
   });
-  const [refreshKey, setRefreshKey] = useState(0); // Add a key to force re-render
   const { toast } = useToast();
 
   const handleInputChange = (e) => {
@@ -45,14 +44,7 @@ export default function Products() {
       return;
     }
 
-    // Add product to the global products list
-    addProductToList({
-      name: newProduct.name,
-      category: newProduct.category,
-      price: parseFloat(newProduct.price),
-      inventory: parseInt(newProduct.stock) || 0,
-    });
-
+    // In a real app, this would add the product to the database
     toast({
       title: "Success",
       description: "Product added successfully",
@@ -66,13 +58,10 @@ export default function Products() {
       stock: "",
       description: ""
     });
-    
-    // Force a re-render of the component to reflect the updated products
-    setRefreshKey(prevKey => prevKey + 1);
   };
 
   return (
-    <div className="space-y-6" key={refreshKey}>
+    <div className="space-y-6">
       <PageHeader 
         title="Products" 
         description="Manage your product catalog"
@@ -129,19 +118,14 @@ export default function Products() {
               <Label htmlFor="price" className="text-right">
                 Price (₹)
               </Label>
-              <div className="relative col-span-3">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <IndianRupee className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  value={newProduct.price}
-                  onChange={handleInputChange}
-                  className="pl-8 col-span-3"
-                />
-              </div>
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                value={newProduct.price}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
@@ -159,8 +143,6 @@ export default function Products() {
                 <option value="Electronics">Electronics</option>
                 <option value="Clothing">Clothing</option>
                 <option value="Home & Kitchen">Home & Kitchen</option>
-                <option value="Accessories">Accessories</option>
-                <option value="Kitchen">Kitchen</option>
               </select>
             </div>
             

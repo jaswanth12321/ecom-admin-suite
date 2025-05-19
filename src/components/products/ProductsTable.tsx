@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Pencil, Eye, Trash, IndianRupee } from "lucide-react";
+import { MoreHorizontal, Pencil, Eye, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Product {
@@ -28,8 +28,7 @@ interface Product {
   status: "In Stock" | "Low Stock" | "Out of Stock";
 }
 
-// Initial products data
-const initialProducts: Product[] = [
+const products: Product[] = [
   {
     id: "PROD-001",
     name: "Wireless Earbuds",
@@ -96,35 +95,9 @@ const initialProducts: Product[] = [
   },
 ];
 
-// Create a global variable to store products data that can be accessed across components
-let globalProducts = [...initialProducts];
-
-// Helper function to add a product to the global products list
-export const addProductToList = (product: Omit<Product, "id" | "status">) => {
-  const newId = `PROD-${String(globalProducts.length + 1).padStart(3, "0")}`;
-  const status = product.inventory > 10 ? "In Stock" : product.inventory > 0 ? "Low Stock" : "Out of Stock";
-  
-  const newProduct: Product = {
-    id: newId,
-    name: product.name,
-    category: product.category || "Other",
-    price: Number(product.price),
-    inventory: Number(product.inventory) || 0,
-    status
-  };
-  
-  globalProducts = [...globalProducts, newProduct];
-  return newProduct;
-};
-
 export function ProductsTable() {
-  const [productsList, setProductsList] = useState<Product[]>(globalProducts);
+  const [productsList, setProductsList] = useState<Product[]>(products);
   const { toast } = useToast();
-  
-  // Update our local state to reflect the global products
-  React.useEffect(() => {
-    setProductsList([...globalProducts]);
-  }, []);
   
   const getStatusBadge = (status: Product["status"]) => {
     switch (status) {
@@ -140,9 +113,9 @@ export function ProductsTable() {
   };
   
   const handleDelete = (id: string) => {
-    const updatedProducts = productsList.filter((product) => product.id !== id);
-    setProductsList(updatedProducts);
-    globalProducts = updatedProducts;
+    setProductsList((prevProducts) => 
+      prevProducts.filter((product) => product.id !== id)
+    );
     
     toast({
       title: "Product deleted",
@@ -170,12 +143,7 @@ export function ProductsTable() {
               <TableCell className="font-medium">{product.id}</TableCell>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.category}</TableCell>
-              <TableCell className="text-right">
-                <span className="flex items-center justify-end">
-                  <IndianRupee className="h-3.5 w-3.5 mr-1" />
-                  {product.price.toFixed(2)}
-                </span>
-              </TableCell>
+              <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
               <TableCell className="text-center">{product.inventory}</TableCell>
               <TableCell className="text-center">
                 {getStatusBadge(product.status)}
