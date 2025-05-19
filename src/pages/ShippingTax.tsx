@@ -1,212 +1,24 @@
 
-import { useState } from "react";
-import { PageHeader, PageHeaderCreateButton } from "@/components/layout/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Truck, Plus, Edit, Check } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-
-// Mock data for shipping zones
-const mockShippingZones = [
-  {
-    id: "zone-1",
-    name: "Domestic",
-    countries: ["United States"],
-    regions: ["All States"],
-    methods: [
-      {
-        id: "method-1-1",
-        name: "Standard Shipping",
-        price: 5.99,
-        estimatedDays: "3-5",
-        freeAbove: 50,
-      },
-      {
-        id: "method-1-2",
-        name: "Express Shipping",
-        price: 15.99,
-        estimatedDays: "1-2",
-        freeAbove: 150,
-      },
-      {
-        id: "method-1-3",
-        name: "Same Day Delivery",
-        price: 29.99,
-        estimatedDays: "0-1",
-        freeAbove: null,
-      },
-    ],
-  },
-  {
-    id: "zone-2",
-    name: "Canada & Mexico",
-    countries: ["Canada", "Mexico"],
-    regions: ["All Regions"],
-    methods: [
-      {
-        id: "method-2-1",
-        name: "Standard International",
-        price: 15.99,
-        estimatedDays: "5-7",
-        freeAbove: 100,
-      },
-      {
-        id: "method-2-2",
-        name: "Express International",
-        price: 34.99,
-        estimatedDays: "2-3",
-        freeAbove: 250,
-      },
-    ],
-  },
-  {
-    id: "zone-3",
-    name: "Europe",
-    countries: ["United Kingdom", "France", "Germany", "Spain", "Italy", "Others"],
-    regions: ["All Regions"],
-    methods: [
-      {
-        id: "method-3-1",
-        name: "Standard International",
-        price: 24.99,
-        estimatedDays: "7-10",
-        freeAbove: 150,
-      },
-      {
-        id: "method-3-2",
-        name: "Express International",
-        price: 44.99,
-        estimatedDays: "3-5",
-        freeAbove: 300,
-      },
-    ],
-  },
-];
-
-// Mock data for tax rates
-const mockTaxRates = [
-  {
-    id: "tax-1",
-    name: "US Sales Tax",
-    country: "United States",
-    state: "California",
-    rate: 8.25,
-    applyToShipping: true,
-  },
-  {
-    id: "tax-2",
-    name: "US Sales Tax",
-    country: "United States",
-    state: "New York",
-    rate: 8.875,
-    applyToShipping: true,
-  },
-  {
-    id: "tax-3",
-    name: "US Sales Tax",
-    country: "United States",
-    state: "Texas",
-    rate: 6.25,
-    applyToShipping: true,
-  },
-  {
-    id: "tax-4",
-    name: "VAT",
-    country: "United Kingdom",
-    state: "All",
-    rate: 20,
-    applyToShipping: true,
-  },
-  {
-    id: "tax-5",
-    name: "GST",
-    country: "Canada",
-    state: "All",
-    rate: 5,
-    applyToShipping: true,
-  },
-];
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function ShippingTax() {
-  const [activeTab, setActiveTab] = useState("shipping");
-  const [isAddShippingOpen, setIsAddShippingOpen] = useState(false);
-  const [isAddTaxOpen, setIsAddTaxOpen] = useState(false);
-  const [editingZone, setEditingZone] = useState(null);
-  const [newShippingZone, setNewShippingZone] = useState({
-    name: "",
-    countries: "",
-    regions: "",
-  });
-  const [newTaxRate, setNewTaxRate] = useState({
-    name: "",
-    country: "",
-    state: "",
-    rate: 0,
-    applyToShipping: true,
-  });
   const { toast } = useToast();
-
-  const handleAddShippingZone = () => {
-    if (!newShippingZone.name || !newShippingZone.countries) {
-      toast({
-        title: "Invalid information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const [activeTab, setActiveTab] = useState("shipping");
+  
+  const handleSave = () => {
     toast({
-      title: "Shipping zone created",
-      description: `${newShippingZone.name} has been added successfully.`,
-    });
-    
-    setIsAddShippingOpen(false);
-    setNewShippingZone({
-      name: "",
-      countries: "",
-      regions: "",
+      title: "Settings saved",
+      description: "Your shipping and tax settings have been saved successfully.",
     });
   };
-
-  const handleAddTaxRate = () => {
-    if (!newTaxRate.name || !newTaxRate.country || newTaxRate.rate <= 0) {
-      toast({
-        title: "Invalid information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Tax rate added",
-      description: `${newTaxRate.name} for ${newTaxRate.country} has been added successfully.`,
-    });
-    
-    setIsAddTaxOpen(false);
-    setNewTaxRate({
-      name: "",
-      country: "",
-      state: "",
-      rate: 0,
-      applyToShipping: true,
-    });
-  };
-
-  const handleEditZone = (zone) => {
-    setEditingZone(zone);
-    toast({
-      title: "Edit shipping zone",
-      description: `Opening editor for ${zone.name} shipping zone.`,
-    });
-  };
-
+  
   return (
     <div className="space-y-6">
       <PageHeader 
@@ -214,260 +26,237 @@ export default function ShippingTax() {
         description="Manage shipping methods and tax rates"
       />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="shipping">Shipping</TabsTrigger>
-          <TabsTrigger value="tax">Tax</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="shipping">Shipping Methods</TabsTrigger>
+          <TabsTrigger value="tax">Tax Rates</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="shipping" className="mt-4 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Shipping Zones</h3>
-            <Button onClick={() => setIsAddShippingOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Zone
+        <TabsContent value="shipping" className="space-y-4">
+          <div className="rounded-lg border p-6">
+            <h2 className="text-lg font-medium mb-4">Shipping Zones</h2>
+            
+            <div className="grid gap-6">
+              {/* India Zone */}
+              <div className="border-b pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-md font-medium">India</h3>
+                  <div className="space-x-2">
+                    <Button variant="ghost" size="sm">Edit</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 mt-4">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-0.5">
+                      <div className="font-medium">Standard Shipping</div>
+                      <div className="text-sm text-muted-foreground">3-5 business days</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">₹70.00</div>
+                      <div className="text-sm text-muted-foreground">Flat rate</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-0.5">
+                      <div className="font-medium">Express Shipping</div>
+                      <div className="text-sm text-muted-foreground">1-2 business days</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">₹150.00</div>
+                      <div className="text-sm text-muted-foreground">Flat rate</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-0.5">
+                      <div className="font-medium">Free Shipping</div>
+                      <div className="text-sm text-muted-foreground">5-7 business days</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">₹0.00</div>
+                      <div className="text-sm text-muted-foreground">Orders over ₹1,000</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* International Zone */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-md font-medium">International</h3>
+                  <div className="space-x-2">
+                    <Button variant="ghost" size="sm">Edit</Button>
+                    <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 mt-4">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-0.5">
+                      <div className="font-medium">International Standard</div>
+                      <div className="text-sm text-muted-foreground">7-14 business days</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">₹500.00</div>
+                      <div className="text-sm text-muted-foreground">Flat rate</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-0.5">
+                      <div className="font-medium">International Express</div>
+                      <div className="text-sm text-muted-foreground">3-5 business days</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">₹1,200.00</div>
+                      <div className="text-sm text-muted-foreground">Flat rate</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <Button className="mt-6">
+              Add Shipping Zone
             </Button>
           </div>
           
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            {mockShippingZones.map((zone) => (
-              <Card key={zone.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-center">
-                    <CardTitle>{zone.name}</CardTitle>
-                    <Button variant="ghost" size="icon" onClick={() => handleEditZone(zone)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <CardDescription>
-                    {zone.countries.length > 1 
-                      ? `${zone.countries.length} countries` 
-                      : zone.countries[0]}
-                    {zone.regions[0] !== "All Regions" && ` - ${zone.regions.join(", ")}`}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2 space-y-3">
-                  {zone.methods.map((method) => (
-                    <div key={method.id} className="flex justify-between py-1 border-b last:border-0">
-                      <div>
-                        <p className="font-medium">{method.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Est. delivery: {method.estimatedDays} days
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">${method.price.toFixed(2)}</p>
-                        {method.freeAbove && (
-                          <p className="text-xs text-muted-foreground">
-                            Free above ${method.freeAbove}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-                <CardFooter className="pt-2">
-                  <Button variant="outline" size="sm" className="w-full" onClick={() => {
-                    toast({
-                      title: "Edit shipping methods",
-                      description: `Opening editor for ${zone.name} shipping methods.`,
-                    });
-                  }}>
-                    <Truck className="mr-2 h-4 w-4" />
-                    Manage Shipping Methods
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+          <div className="rounded-lg border p-6">
+            <h2 className="text-lg font-medium mb-4">Shipping Settings</h2>
+            
+            <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="calculation_type" className="mb-2 block">Calculation Type</Label>
+                  <select
+                    id="calculation_type"
+                    className="w-full rounded-md border border-input px-3 py-2"
+                    defaultValue="flat"
+                  >
+                    <option value="flat">Flat Rate</option>
+                    <option value="weight">Based on Weight</option>
+                    <option value="price">Based on Price</option>
+                  </select>
+                  <p className="text-sm text-muted-foreground mt-1">How shipping costs are calculated</p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="shipping_classes" className="mb-2 block">Shipping Classes</Label>
+                  <select
+                    id="shipping_classes"
+                    className="w-full rounded-md border border-input px-3 py-2"
+                    defaultValue="disabled"
+                  >
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                  <p className="text-sm text-muted-foreground mt-1">Group products with similar shipping requirements</p>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          <Button onClick={handleSave}>Save Shipping Settings</Button>
         </TabsContent>
         
-        <TabsContent value="tax" className="mt-4 space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Tax Rates</h3>
-            <Button onClick={() => setIsAddTaxOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> Add Tax Rate
-            </Button>
+        <TabsContent value="tax" className="space-y-4">
+          <div className="rounded-lg border p-6">
+            <h2 className="text-lg font-medium mb-4">Tax Settings</h2>
+            
+            <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="tax_calculation" className="mb-2 block">Tax Calculation</Label>
+                  <select
+                    id="tax_calculation"
+                    className="w-full rounded-md border border-input px-3 py-2"
+                    defaultValue="per_item"
+                  >
+                    <option value="per_item">Per Item</option>
+                    <option value="per_order">Per Order</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="price_display" className="mb-2 block">Prices Display</Label>
+                  <select
+                    id="price_display"
+                    className="w-full rounded-md border border-input px-3 py-2"
+                    defaultValue="including"
+                  >
+                    <option value="including">Including Tax</option>
+                    <option value="excluding">Excluding Tax</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div className="rounded-md border">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="h-12 px-4 text-left font-medium">Name</th>
-                  <th className="h-12 px-4 text-left font-medium">Country</th>
-                  <th className="h-12 px-4 text-left font-medium">State/Region</th>
-                  <th className="h-12 px-4 text-left font-medium">Rate</th>
-                  <th className="h-12 px-4 text-left font-medium">Options</th>
-                  <th className="h-12 px-4 text-left font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockTaxRates.map((tax) => (
-                  <tr key={tax.id} className="border-b">
-                    <td className="p-4">{tax.name}</td>
-                    <td className="p-4">{tax.country}</td>
-                    <td className="p-4">{tax.state}</td>
-                    <td className="p-4">{tax.rate}%</td>
-                    <td className="p-4">
-                      {tax.applyToShipping ? (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                          <Check className="mr-1 h-3 w-3" />
-                          Apply to shipping
-                        </Badge>
-                      ) : "No options"}
-                    </td>
-                    <td className="p-4">
-                      <Button variant="ghost" size="sm" onClick={() => {
-                        toast({
-                          title: "Edit tax rate",
-                          description: `Opening editor for ${tax.name} in ${tax.state}, ${tax.country}.`,
-                        });
-                      }}>
-                        Edit
-                      </Button>
+          <div className="rounded-lg border p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium">Tax Rates</h2>
+              <Button size="sm">Add Tax Rate</Button>
+            </div>
+            
+            <div className="overflow-hidden rounded-lg border">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Country</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">State</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Rate</th>
+                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="px-4 py-3">India</td>
+                    <td className="px-4 py-3">All</td>
+                    <td className="px-4 py-3">18%</td>
+                    <td className="px-4 py-3">GST Standard Rate</td>
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button variant="ghost" size="sm">Edit</Button>
+                      <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                  <tr className="border-t">
+                    <td className="px-4 py-3">India</td>
+                    <td className="px-4 py-3">All</td>
+                    <td className="px-4 py-3">12%</td>
+                    <td className="px-4 py-3">GST Reduced Rate</td>
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button variant="ghost" size="sm">Edit</Button>
+                      <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
+                    </td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="px-4 py-3">India</td>
+                    <td className="px-4 py-3">All</td>
+                    <td className="px-4 py-3">5%</td>
+                    <td className="px-4 py-3">GST Lower Rate</td>
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button variant="ghost" size="sm">Edit</Button>
+                      <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-sm text-muted-foreground">
+                <Badge variant="outline">Note</Badge> Tax rates define the percentage of tax applied to products.
+              </p>
+            </div>
           </div>
           
-          <div className="bg-muted/50 rounded-lg p-4 mt-6">
-            <h4 className="font-medium mb-2">Tax Settings</h4>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="prices_include_tax" className="rounded border-gray-300" checked />
-                <Label htmlFor="prices_include_tax">Prices entered with tax</Label>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                When checked, entered prices are treated as tax-inclusive. Tax will be calculated and 
-                displayed at checkout based on customer's shipping address.
-              </p>
-            </div>
-          </div>
+          <Button onClick={handleSave}>Save Tax Settings</Button>
         </TabsContent>
       </Tabs>
-      
-      {/* Add Shipping Zone Dialog */}
-      <Dialog open={isAddShippingOpen} onOpenChange={setIsAddShippingOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Add Shipping Zone</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="zoneName">Zone Name</Label>
-              <Input
-                id="zoneName"
-                placeholder="e.g. Domestic, International"
-                value={newShippingZone.name}
-                onChange={(e) => setNewShippingZone({...newShippingZone, name: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="countries">Countries</Label>
-              <Input
-                id="countries"
-                placeholder="e.g. United States, Canada"
-                value={newShippingZone.countries}
-                onChange={(e) => setNewShippingZone({...newShippingZone, countries: e.target.value})}
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter country names separated by commas
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="regions">Regions (Optional)</Label>
-              <Input
-                id="regions"
-                placeholder="e.g. California, New York"
-                value={newShippingZone.regions}
-                onChange={(e) => setNewShippingZone({...newShippingZone, regions: e.target.value})}
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter specific regions or leave blank for all regions
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddShippingOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddShippingZone}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Zone
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Add Tax Rate Dialog */}
-      <Dialog open={isAddTaxOpen} onOpenChange={setIsAddTaxOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Add Tax Rate</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="taxName">Tax Name</Label>
-              <Input
-                id="taxName"
-                placeholder="e.g. VAT, Sales Tax"
-                value={newTaxRate.name}
-                onChange={(e) => setNewTaxRate({...newTaxRate, name: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                placeholder="e.g. United States"
-                value={newTaxRate.country}
-                onChange={(e) => setNewTaxRate({...newTaxRate, country: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="state">State/Region (Optional)</Label>
-              <Input
-                id="state"
-                placeholder="e.g. California, or 'All' for all states"
-                value={newTaxRate.state}
-                onChange={(e) => setNewTaxRate({...newTaxRate, state: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rate">Tax Rate (%)</Label>
-              <Input
-                id="rate"
-                type="number"
-                step="0.01"
-                placeholder="e.g. 8.25"
-                value={newTaxRate.rate || ''}
-                onChange={(e) => setNewTaxRate({...newTaxRate, rate: parseFloat(e.target.value)})}
-              />
-            </div>
-            <div className="flex items-center space-x-2 pt-2">
-              <input 
-                type="checkbox" 
-                id="applyToShipping"
-                className="rounded border-gray-300" 
-                checked={newTaxRate.applyToShipping}
-                onChange={(e) => setNewTaxRate({...newTaxRate, applyToShipping: e.target.checked})}
-              />
-              <Label htmlFor="applyToShipping">Apply tax to shipping</Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddTaxOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddTaxRate}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Tax Rate
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Eye, Filter } from "lucide-react";
@@ -18,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 // Mock data for orders
 const mockOrders = [
@@ -158,7 +158,7 @@ export default function Orders() {
                 <TableCell className="hidden md:table-cell">
                   {new Date(order.date).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
+                <TableCell className="text-right">₹{order.total.toFixed(2)}</TableCell>
                 <TableCell>{getStatusBadge(order.status)}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm">

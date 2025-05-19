@@ -1,7 +1,8 @@
 
+import { useState } from "react";
 import { PageHeader, PageHeaderCreateButton } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Plus, FolderTree } from "lucide-react";
+import { Plus, FolderTree, X } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,7 +17,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for categories
 const mockCategories = [
@@ -87,9 +98,70 @@ const mockCategories = [
 
 export default function Categories() {
   const [searchTerm, setSearchTerm] = useState("");
-  const filteredCategories = mockCategories.filter((category) =>
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [categories, setCategories] = useState(mockCategories);
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    slug: "",
+    description: "",
+    parent: "",
+  });
+  const { toast } = useToast();
+
+  const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCategory({ ...newCategory, [name]: value });
+
+    // Auto-generate slug from name
+    if (name === "name") {
+      setNewCategory({
+        ...newCategory,
+        name: value,
+        slug: value.toLowerCase().replace(/\s+/g, '-'),
+      });
+    }
+  };
+
+  const handleAddCategory = () => {
+    if (!newCategory.name) {
+      toast({
+        title: "Error",
+        description: "Category name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCategoryItem = {
+      id: `cat-${String(categories.length + 1).padStart(3, "0")}`,
+      name: newCategory.name,
+      slug: newCategory.slug,
+      description: newCategory.description,
+      parent: newCategory.parent || null,
+      productCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    setCategories([...categories, newCategoryItem]);
+    setIsDialogOpen(false);
+    setNewCategory({
+      name: "",
+      slug: "",
+      description: "",
+      parent: "",
+    });
+
+    toast({
+      title: "Success",
+      description: "Category added successfully",
+    });
+  };
+
+  const parentOptions = categories.filter(cat => cat.parent === null);
 
   return (
     <div className="space-y-6">
@@ -97,7 +169,7 @@ export default function Categories() {
         title="Categories" 
         description="Manage your product categories"
         actions={
-          <PageHeaderCreateButton>
+          <PageHeaderCreateButton onClick={() => setIsDialogOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Add Category
           </PageHeaderCreateButton>
         }
@@ -168,6 +240,86 @@ export default function Categories() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Add Category Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Category</DialogTitle>
+            <DialogDescription>
+              Create a new product category. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                value={newCategory.name}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="slug" className="text-right">
+                Slug
+              </Label>
+              <Input
+                id="slug"
+                name="slug"
+                value={newCategory.slug}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="parent" className="text-right">
+                Parent
+              </Label>
+              <select
+                id="parent"
+                name="parent"
+                value={newCategory.parent}
+                onChange={handleInputChange}
+                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">None (Top Level)</option>
+                {parentOptions.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Input
+                id="description"
+                name="description"
+                value={newCategory.description}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddCategory}>Save Category</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
