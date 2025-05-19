@@ -24,8 +24,47 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
+// Permission type definitions
+type Permission = {
+  view: boolean;
+  create?: boolean;
+  edit?: boolean;
+  delete?: boolean;
+  process?: boolean;
+  export?: boolean;
+};
+
+type Permissions = {
+  dashboard: Permission;
+  products: Permission;
+  orders: Permission;
+  customers: Permission;
+  discounts: Permission;
+  reports: Permission;
+  settings: Permission;
+};
+
+// Role type definition
+type Role = {
+  id: string;
+  name: string;
+  description: string;
+  usersCount: number;
+  permissions: Permissions;
+  isSystem: boolean;
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  lastActive: string;
+  status: string;
+};
+
 // Mock data for user roles
-const mockRoles = [
+const mockRoles: Role[] = [
   {
     id: "role-1",
     name: "Administrator",
@@ -109,7 +148,7 @@ const mockRoles = [
 ];
 
 // Mock data for users
-const mockUsers = [
+const mockUsers: User[] = [
   {
     id: "user-1",
     name: "John Doe",
@@ -165,9 +204,13 @@ export default function Roles() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddRoleOpen, setIsAddRoleOpen] = useState(false);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [editingRole, setEditingRole] = useState(null);
-  const [showPermissions, setShowPermissions] = useState(null);
-  const [newRole, setNewRole] = useState({
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [showPermissions, setShowPermissions] = useState<string | null>(null);
+  const [newRole, setNewRole] = useState<{
+    name: string;
+    description: string;
+    permissions: Permissions;
+  }>({
     name: "",
     description: "",
     permissions: {
@@ -265,8 +308,13 @@ export default function Roles() {
     });
   };
 
-  const togglePermissionView = (roleId) => {
+  const togglePermissionView = (roleId: string) => {
     setShowPermissions(showPermissions === roleId ? null : roleId);
+  };
+
+  // Helper function for safely checking if a permission property exists
+  const hasPermission = (perms: Permission, property: keyof Permission): boolean => {
+    return property in perms ? perms[property] === true : false;
   };
 
   return (
@@ -426,24 +474,24 @@ export default function Roles() {
                                 {perms.view ? <Check className="mx-auto h-4 w-4 text-green-500" /> : <X className="mx-auto h-4 w-4 text-gray-300" />}
                               </td>
                               <td className="p-2 text-center">
-                                {perms.create !== undefined ? 
+                                {'create' in perms ? 
                                   (perms.create ? <Check className="mx-auto h-4 w-4 text-green-500" /> : <X className="mx-auto h-4 w-4 text-gray-300" />) : 
                                   "—"}
                               </td>
                               <td className="p-2 text-center">
-                                {perms.edit !== undefined ? 
+                                {'edit' in perms ? 
                                   (perms.edit ? <Check className="mx-auto h-4 w-4 text-green-500" /> : <X className="mx-auto h-4 w-4 text-gray-300" />) : 
                                   "—"}
                               </td>
                               <td className="p-2 text-center">
-                                {perms.delete !== undefined ? 
+                                {'delete' in perms ? 
                                   (perms.delete ? <Check className="mx-auto h-4 w-4 text-green-500" /> : <X className="mx-auto h-4 w-4 text-gray-300" />) : 
                                   "—"}
                               </td>
                               <td className="p-2 text-center">
-                                {module === "orders" && perms.process !== undefined ? 
+                                {module === "orders" && 'process' in perms ? 
                                   (perms.process ? "Process orders" : "—") : 
-                                  module === "reports" && perms.export !== undefined ?
+                                  module === "reports" && 'export' in perms ?
                                   (perms.export ? "Export data" : "—") :
                                   "—"}
                               </td>
@@ -602,7 +650,7 @@ export default function Roles() {
                                   permissions: {
                                     ...newRole.permissions,
                                     [module]: {
-                                      ...newRole.permissions[module],
+                                      ...newRole.permissions[module as keyof Permissions],
                                       view: e.target.checked
                                     }
                                   }
@@ -611,7 +659,7 @@ export default function Roles() {
                             />
                           </td>
                           <td className="p-2 text-center">
-                            {perms.create !== undefined ? (
+                            {'create' in perms ? (
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-300" 
@@ -621,10 +669,10 @@ export default function Roles() {
                                     ...newRole,
                                     permissions: {
                                       ...newRole.permissions,
-                                      [module]: {
-                                        ...newRole.permissions[module],
+                                      [module as keyof Permissions]: {
+                                        ...newRole.permissions[module as keyof Permissions],
                                         create: e.target.checked
-                                      }
+                                      } as Permission
                                     }
                                   });
                                 }}
@@ -632,7 +680,7 @@ export default function Roles() {
                             ) : "—"}
                           </td>
                           <td className="p-2 text-center">
-                            {perms.edit !== undefined ? (
+                            {'edit' in perms ? (
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-300" 
@@ -642,10 +690,10 @@ export default function Roles() {
                                     ...newRole,
                                     permissions: {
                                       ...newRole.permissions,
-                                      [module]: {
-                                        ...newRole.permissions[module],
+                                      [module as keyof Permissions]: {
+                                        ...newRole.permissions[module as keyof Permissions],
                                         edit: e.target.checked
-                                      }
+                                      } as Permission
                                     }
                                   });
                                 }}
@@ -653,7 +701,7 @@ export default function Roles() {
                             ) : "—"}
                           </td>
                           <td className="p-2 text-center">
-                            {perms.delete !== undefined ? (
+                            {'delete' in perms ? (
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-300" 
@@ -663,10 +711,10 @@ export default function Roles() {
                                     ...newRole,
                                     permissions: {
                                       ...newRole.permissions,
-                                      [module]: {
-                                        ...newRole.permissions[module],
+                                      [module as keyof Permissions]: {
+                                        ...newRole.permissions[module as keyof Permissions],
                                         delete: e.target.checked
-                                      }
+                                      } as Permission
                                     }
                                   });
                                 }}
