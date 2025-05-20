@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { PageHeader, PageHeaderCreateButton } from "@/components/layout/PageHeader";
-import { ProductsTable } from "@/components/products/ProductsTable";
+import { ProductsTable, Product } from "@/components/products/ProductsTable";
 import { ProductFilters } from "@/components/products/ProductFilters";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -18,8 +18,77 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
+// Initial product data
+const initialProducts: Product[] = [
+  {
+    id: "PROD-001",
+    name: "Wireless Earbuds",
+    category: "Electronics",
+    price: 59.99,
+    inventory: 32,
+    status: "In Stock",
+  },
+  {
+    id: "PROD-002",
+    name: "Smart Watch",
+    category: "Electronics",
+    price: 199.99,
+    inventory: 18,
+    status: "In Stock",
+  },
+  {
+    id: "PROD-003",
+    name: "Bluetooth Speaker",
+    category: "Electronics",
+    price: 79.99,
+    inventory: 5,
+    status: "Low Stock",
+  },
+  {
+    id: "PROD-004",
+    name: "Premium Leather Wallet",
+    category: "Accessories",
+    price: 49.99,
+    inventory: 42,
+    status: "In Stock",
+  },
+  {
+    id: "PROD-005",
+    name: "Stainless Steel Water Bottle",
+    category: "Kitchen",
+    price: 24.99,
+    inventory: 0,
+    status: "Out of Stock",
+  },
+  {
+    id: "PROD-006",
+    name: "Fitness Tracker",
+    category: "Electronics",
+    price: 89.99,
+    inventory: 27,
+    status: "In Stock",
+  },
+  {
+    id: "PROD-007",
+    name: "Bamboo Cutting Board",
+    category: "Kitchen",
+    price: 34.99,
+    inventory: 8,
+    status: "Low Stock",
+  },
+  {
+    id: "PROD-008",
+    name: "Ceramic Coffee Mug",
+    category: "Kitchen",
+    price: 12.99,
+    inventory: 53,
+    status: "In Stock",
+  },
+];
+
 export default function Products() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [productsList, setProductsList] = useState<Product[]>(initialProducts);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -34,6 +103,16 @@ export default function Products() {
     setNewProduct({ ...newProduct, [name]: value });
   };
 
+  const generateProductId = () => {
+    // Find highest ID number and increment by 1
+    const maxId = productsList
+      .map(p => parseInt(p.id.split("-")[1]))
+      .reduce((max, id) => Math.max(max, id), 0);
+    
+    const newIdNumber = maxId + 1;
+    return `PROD-${newIdNumber.toString().padStart(3, "0")}`;
+  };
+
   const handleAddProduct = () => {
     if (!newProduct.name || !newProduct.price) {
       toast({
@@ -44,7 +123,19 @@ export default function Products() {
       return;
     }
 
-    // In a real app, this would add the product to the database
+    // Create new product with proper structure
+    const product: Product = {
+      id: generateProductId(),
+      name: newProduct.name,
+      category: newProduct.category || "Other",
+      price: parseFloat(newProduct.price) || 0,
+      inventory: parseInt(newProduct.stock) || 0,
+      status: parseInt(newProduct.stock) > 10 ? "In Stock" : parseInt(newProduct.stock) > 0 ? "Low Stock" : "Out of Stock"
+    };
+
+    // Add the product to the list
+    setProductsList([...productsList, product]);
+
     toast({
       title: "Success",
       description: "Product added successfully",
@@ -74,11 +165,11 @@ export default function Products() {
       
       <ProductFilters />
       
-      <ProductsTable />
+      <ProductsTable productsList={productsList} setProductsList={setProductsList} />
       
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing 8 of 50 products
+          Showing {productsList.length} of 50 products
         </p>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" disabled>
@@ -143,6 +234,9 @@ export default function Products() {
                 <option value="Electronics">Electronics</option>
                 <option value="Clothing">Clothing</option>
                 <option value="Home & Kitchen">Home & Kitchen</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Kitchen">Kitchen</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             

@@ -192,9 +192,9 @@ export default function Discounts() {
                 <TableRow key={discount.id}>
                   <TableCell className="font-medium">{discount.code}</TableCell>
                   <TableCell>
-                    {discount.type === "percentage" ? `${discount.value}%` : `$${discount.value.toFixed(2)}`}
+                    {discount.type === "percentage" ? `${discount.value}%` : `₹${discount.value.toFixed(2)}`}
                     <div className="text-xs text-muted-foreground">
-                      Min. purchase: ${discount.minPurchase}
+                      Min. purchase: ₹{discount.minPurchase}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -287,7 +287,7 @@ export default function Discounts() {
                     onChange={(e) => setNewDiscount({ ...newDiscount, type: e.target.value })}
                   >
                     <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount ($)</option>
+                    <option value="fixed">Fixed Amount (₹)</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -303,7 +303,7 @@ export default function Discounts() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="minimum">Min. Purchase Amount ($)</Label>
+                  <Label htmlFor="minimum">Min. Purchase Amount (₹)</Label>
                   <Input
                     id="minimum"
                     type="number"

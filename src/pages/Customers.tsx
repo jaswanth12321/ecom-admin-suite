@@ -167,7 +167,7 @@ export default function Customers() {
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{customer.orders}</TableCell>
-                  <TableCell className="hidden md:table-cell">${customer.spent.toFixed(2)}</TableCell>
+                  <TableCell className="hidden md:table-cell">₹{customer.spent.toFixed(2)}</TableCell>
                   <TableCell>{getStatusBadge(customer.status)}</TableCell>
                   <TableCell className="hidden md:table-cell">
                     {new Date(customer.lastOrder).toLocaleDateString()}

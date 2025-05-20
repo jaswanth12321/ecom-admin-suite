@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { 
   Table, 
   TableBody, 
@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Pencil, Eye, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   category: string;
@@ -28,75 +28,12 @@ interface Product {
   status: "In Stock" | "Low Stock" | "Out of Stock";
 }
 
-const products: Product[] = [
-  {
-    id: "PROD-001",
-    name: "Wireless Earbuds",
-    category: "Electronics",
-    price: 59.99,
-    inventory: 32,
-    status: "In Stock",
-  },
-  {
-    id: "PROD-002",
-    name: "Smart Watch",
-    category: "Electronics",
-    price: 199.99,
-    inventory: 18,
-    status: "In Stock",
-  },
-  {
-    id: "PROD-003",
-    name: "Bluetooth Speaker",
-    category: "Electronics",
-    price: 79.99,
-    inventory: 5,
-    status: "Low Stock",
-  },
-  {
-    id: "PROD-004",
-    name: "Premium Leather Wallet",
-    category: "Accessories",
-    price: 49.99,
-    inventory: 42,
-    status: "In Stock",
-  },
-  {
-    id: "PROD-005",
-    name: "Stainless Steel Water Bottle",
-    category: "Kitchen",
-    price: 24.99,
-    inventory: 0,
-    status: "Out of Stock",
-  },
-  {
-    id: "PROD-006",
-    name: "Fitness Tracker",
-    category: "Electronics",
-    price: 89.99,
-    inventory: 27,
-    status: "In Stock",
-  },
-  {
-    id: "PROD-007",
-    name: "Bamboo Cutting Board",
-    category: "Kitchen",
-    price: 34.99,
-    inventory: 8,
-    status: "Low Stock",
-  },
-  {
-    id: "PROD-008",
-    name: "Ceramic Coffee Mug",
-    category: "Kitchen",
-    price: 12.99,
-    inventory: 53,
-    status: "In Stock",
-  },
-];
+interface ProductsTableProps {
+  productsList: Product[];
+  setProductsList: React.Dispatch<React.SetStateAction<Product[]>>;
+}
 
-export function ProductsTable() {
-  const [productsList, setProductsList] = useState<Product[]>(products);
+export function ProductsTable({ productsList, setProductsList }: ProductsTableProps) {
   const { toast } = useToast();
   
   const getStatusBadge = (status: Product["status"]) => {
@@ -143,7 +80,7 @@ export function ProductsTable() {
               <TableCell className="font-medium">{product.id}</TableCell>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.category}</TableCell>
-              <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+              <TableCell className="text-right">₹{product.price.toFixed(2)}</TableCell>
               <TableCell className="text-center">{product.inventory}</TableCell>
               <TableCell className="text-center">
                 {getStatusBadge(product.status)}
